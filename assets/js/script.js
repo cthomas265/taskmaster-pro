@@ -21,6 +21,69 @@ var createTask = function(taskText, taskDate, taskList) {
 var loadTasks = function() {
   tasks = JSON.parse(localStorage.getItem("tasks"));
 
+  $(".card .list-group").sortable({
+    connectWith: $(".card .list-group"),
+    scroll: false,
+    tolerance: "pointer",
+    helper: "clone",
+    activate:function(event) {
+      console.log("activate", this);
+    },
+    deactivate: function(event) {
+      console.log("deactivate", this);
+    },
+    over: function(event) {
+      console.log("over", event.target);
+    },
+    out: function(event) {
+      console.log("out", event.target);
+    },
+    update:function(Event) {
+      var tempArr = [];
+
+      $(this).children().each(function() {
+        var text = $(this)
+        .find("p")
+        .text()
+        .trim();
+
+        var arrName = $(this)
+          .attr("id")
+          .replace("list-", "");
+          
+          tasks[arrName] = tempArr;
+          saveTasks();
+
+        var date = $(this)
+        .find("span")
+        .text()
+        .trim();
+
+        tempArr.push({
+          tex: text,
+          date: date
+        });
+      });
+
+      console.log(tempArr);
+    }
+  });
+
+
+  $("#trash").droppable({
+    accept: ".card .list-group-item",
+    tolerance: "touch",
+    drop: function(event, ul) {
+      console.log("drop");
+    },
+    over: function(event, ul) {
+      console.log("over");
+    },
+    out: function(event, ui) {
+      console.log("out");
+    }
+    
+  })
   // if nothing in localStorage, create a new object to track all task status arrays
   if (!tasks) {
     tasks = {
@@ -44,8 +107,6 @@ var loadTasks = function() {
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
-
-
 
 
 // modal was triggered
